@@ -1444,4 +1444,506 @@ data.isLight = true;
 data.lightColor = colorPicker.BackgroundColor;
 data.lightIntensity = lightIntensitySlider.GetValue();
 if (lightSpotCheckbox.IsChecked)
-data.li__RICOS_CONTINUE__
+data.lightType = LightType.Spot;
+else
+data.lightType = LightType.Point;
+data.lightHorizontalRotation = lightHorizontalRotationSlider.GetValue();
+data.lightVerticalRotation = lightVerticalRotationSlider.GetValue();
+data.lightSpotAngle = lightSpotAngleSlider.GetValue();
+}
+else
+{
+data.isLight = false;
+}
+if (containerCheckbox.IsChecked)
+data.isContainer = true;
+else if (data.isContainer == true)
+{
+string message = "You must use the Delete button to remove containers.";
+DaggerfallMessageBox mb = new DaggerfallMessageBox(uiManager, this);
+mb.ParentPanel.BackgroundColor = Color.clear;
+mb.ClickAnywhereToClose = true;
+mb.SetText(message);
+mb.Show();
+containerCheckbox.IsChecked = true;
+potionMakerCheckbox.IsChecked = false;
+spellMakerCheckbox.IsChecked = false;
+itemMakerCheckbox.IsChecked = false;
+emulatorCheckbox.IsChecked = false;
+emulator2Checkbox.IsChecked = false;
+}
+data.isPotionMaker = potionMakerCheckbox.IsChecked;
+data.isSpellMaker = spellMakerCheckbox.IsChecked;
+data.isItemMaker = itemMakerCheckbox.IsChecked;
+data.isEmulator = emulatorCheckbox.IsChecked;
+data.isEmulator2 = emulator2Checkbox.IsChecked;
+if (scaleCheckBox.IsChecked)
+data.localScale = new Vector3(scaleXSlider.GetValue(), scaleYSlider.GetValue(), scaleZSlider.GetValue());
+else
+data.localScale = Vector3.one;
+if (!editMode)
+{
+PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
+PlayerGPS playerGPS = GameManager.Instance.PlayerGPS;
+int amount = DecoratorManager.Instance.PlaceObjectCost;
+int playerGold = playerEntity.GetGoldAmount();
+int accountGold = DaggerfallBankManager.BankAccounts[playerGPS.CurrentRegionIndex].accountGold;
+if (playerGold + accountGold >= amount)
+{
+amount = playerEntity.DeductGoldAmount(amount);
+DaggerfallBankManager.BankAccounts[playerGPS.CurrentRegionIndex].accountGold -= amount;
+data.localPosition = Parent.InverseTransformPoint(previewGo.transform.position);
+data.localRotation = Quaternion.Inverse(Parent.rotation) * previewGo.transform.rotation;
+DecoratorHelper.CreatePlacedObject(data, Parent);
+}
+else
+DaggerfallUI.MessageBox("Not enough gold.");
+}
+else
+{
+DecoratorHelper.SetPlacedObject(data, previewGo);
+ResetPreview();
+}
+}
+private void UpButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (previewGo == null)
+return;
+if (!editMode)
+{
+Vector3 goPosition = previewGo.transform.localPosition;
+if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+{
+goPosition.y += .02f;
+}
+else
+goPosition.z += .02f;
+previewGo.transform.localPosition = lastPosition = goPosition;
+}
+else
+{
+Vector3 goPosition = previewGo.transform.InverseTransformPoint(previewGo.transform.position);
+if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+{
+goPosition.y += .02f;
+}
+else
+goPosition.z += .02f;
+previewGo.transform.position = previewGo.transform.TransformPoint(goPosition);
+}
+}
+private void DownButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (previewGo == null)
+return;
+if (!editMode)
+{
+Vector3 goPosition = previewGo.transform.localPosition;
+if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+goPosition.y -= .02f;
+else
+goPosition.z -= .02f;
+previewGo.transform.localPosition = lastPosition = goPosition;
+}
+else
+{
+Vector3 goPosition = previewGo.transform.InverseTransformPoint(previewGo.transform.position);
+if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+goPosition.y -= .02f;
+else
+goPosition.z -= .02f;
+previewGo.transform.position = previewGo.transform.TransformPoint(goPosition);
+}
+}
+private void LeftButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (previewGo == null)
+return;
+if (!editMode)
+{
+Vector3 goPosition = previewGo.transform.localPosition;
+goPosition.x -= .02f;
+previewGo.transform.localPosition = lastPosition = goPosition;
+}
+else
+{
+Vector3 goPosition = previewGo.transform.InverseTransformPoint(previewGo.transform.position);
+goPosition.x += .02f;
+previewGo.transform.position = previewGo.transform.TransformPoint(goPosition);
+}
+}
+private void RightButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (previewGo == null)
+return;
+if (!editMode)
+{
+Vector3 goPosition = previewGo.transform.localPosition;
+goPosition.x += .02f;
+previewGo.transform.localPosition = lastPosition = goPosition;
+}
+else
+{
+Vector3 goPosition = previewGo.transform.InverseTransformPoint(previewGo.transform.position);
+goPosition.x -= .02f;
+previewGo.transform.position = previewGo.transform.TransformPoint(goPosition);
+}
+}
+private void RotateXZLeftButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (previewGo == null)
+return;
+Quaternion rotation = previewGo.transform.rotation;
+if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+rotation *= Quaternion.Euler(5.0f, 0.0f, 0.0f);
+else
+rotation *= Quaternion.Euler(0.0f, 0.0f, -5.0f);
+previewGo.transform.rotation = rotation;
+}
+private void RotateXZRightButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (previewGo == null)
+return;
+Quaternion rotation = previewGo.transform.rotation;
+if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+rotation *= Quaternion.Euler(-5.0f, 0.0f, 0.0f);
+else
+rotation *= Quaternion.Euler(0.0f, 0.0f, 5.0f);
+previewGo.transform.rotation = rotation;
+}
+private void RotateLeftButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (previewGo == null)
+return;
+if (snapCheckbox.IsChecked)
+{
+if (goRotation - 1 == -1)
+goRotation = 3;
+else
+goRotation = Mathf.Max(0, goRotation - 1);
+}
+else
+{
+Quaternion rotation = previewGo.transform.rotation;
+if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+rotation *= Quaternion.Euler(0.0f, 10.0f, 0.0f);
+else
+rotation *= Quaternion.Euler(0.0f, 5.0f, 0.0f);
+previewGo.transform.rotation = rotation;
+}
+}
+private void RotateRightButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (previewGo == null)
+return;
+if (snapCheckbox.IsChecked)
+{
+if (goRotation + 1 == 4)
+goRotation = 0;
+else
+goRotation = Mathf.Min(3, goRotation + 1);
+}
+else
+{
+Quaternion rotation = previewGo.transform.rotation;
+if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+rotation *= Quaternion.Euler(0.0f, -10.0f, 0.0f);
+else
+rotation *= Quaternion.Euler(0.0f, -5.0f, 0.0f);
+previewGo.transform.rotation = rotation;
+}
+}
+private void EditButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (editCheckBox.IsChecked)
+{
+if (previewGo != null)
+{
+GameObject.Destroy(previewGo);
+ResetPreview();
+}
+editMode = true;
+listPanel.Components.Clear();
+mainPanel.Enabled = false;
+listPanel.Enabled = false;
+snapCheckbox.IsChecked = false;
+snapCheckbox.Enabled = true ;
+deleteButton.Enabled = true;
+}
+else
+{
+if (previewGo != null)
+{
+DecoratorHelper.SetPlacedObject(lastPlacedObjectData, previewGo);
+ResetPreview();
+}
+editMode = false;
+mainPanel.Enabled = true;
+listPanel.Enabled = true;
+scalePanel.Enabled = false;
+lightPanel.Enabled = false;
+lightCheckbox.IsChecked = false;
+scaleCheckBox.IsChecked = false;
+containerCheckbox.IsChecked = false;
+snapCheckbox.Enabled = true;
+deleteButton.Enabled = false;
+}
+}
+private void OnCheckboxClicked(BaseScreenComponent sender, Vector2 position)
+{
+Checkbox clickedCheckbox = sender as Checkbox;
+if (!clickedCheckbox.IsChecked)
+return;
+containerCheckbox.IsChecked = clickedCheckbox == containerCheckbox;
+potionMakerCheckbox.IsChecked = clickedCheckbox == potionMakerCheckbox;
+spellMakerCheckbox.IsChecked = clickedCheckbox == spellMakerCheckbox;
+itemMakerCheckbox.IsChecked = clickedCheckbox == itemMakerCheckbox;
+emulatorCheckbox.IsChecked = clickedCheckbox == emulatorCheckbox;
+emulator2Checkbox.IsChecked = clickedCheckbox == emulator2Checkbox;
+}
+private void DeleteButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (previewGo == null)
+return;
+string message;
+if (previewGo.GetComponent<PlacedObject>().GetData().isContainer)
+message = "Are you sure? All items will be lost.";
+else
+message = "Are you sure?";
+DaggerfallMessageBox mb = new DaggerfallMessageBox(uiManager);
+mb.ParentPanel.BackgroundColor = Color.clear;
+mb.SetText(message);
+mb.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+mb.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
+mb.OnButtonClick += (_sender, button) =>
+{
+_sender.CloseWindow();
+if (button == DaggerfallMessageBox.MessageBoxButtons.Yes)
+{
+GameObject.Destroy(previewGo);
+ResetPreview();
+}
+};
+mb.Show();
+}
+private void LowButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+goHeight = 1;
+SetObjectHeight(1);
+}
+private void MedButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+goHeight = 2;
+SetObjectHeight(2);
+}
+private void HighButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+goHeight = 3;
+SetObjectHeight(3);
+}
+private void ResetObjectButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+ResetTransform();
+}
+private void ScaleResetButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+ResetScale();
+}
+private void Slider_OnRightMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+HorizontalSlider slider = (HorizontalSlider)sender;
+DaggerfallInputMessageBox imb = new DaggerfallInputMessageBox(uiManager, this);
+imb.SetTextBoxLabel("Value:");
+imb.TextPanelDistanceX = 5;
+imb.TextPanelDistanceY = 9;
+imb.TextBox.Text = slider.GetValue().ToString("0.0");
+imb.TextBox.Numeric = true;
+imb.TextBox.NumericMode = NumericMode.Float;
+imb.TextBox.MaxCharacters = 5;
+imb.OnGotUserInput += (_sender, input) =>
+{
+float value;
+bool result = float.TryParse(input, out value);
+if (!result)
+return;
+slider.SetValue(value);
+};
+imb.Show();
+}
+#endregion Transform Panel
+#region Main Panel
+private void Page_OnRightButtonClicked()
+{
+if (currentDictionary == null)
+return;
+pageSpinner.Value = Math.Min(pages, pageSpinner.Value + 1);
+PopulateList(currentDictionary, pageSpinner.Value);
+}
+private void Page_OnLeftButtonClicked()
+{
+if (currentDictionary == null)
+return;
+pageSpinner.Value = Math.Max(1, pageSpinner.Value - 1);
+PopulateList(currentDictionary, pageSpinner.Value);
+}
+#endregion Main Panel
+#endregion Events
+}
+public class DecoratorDebugWindow : DaggerfallPopupWindow
+{
+private PlayerMouseLook playerMouseLook;
+private bool mouselookToggle;
+private KeyCode hideWindowKey;
+private Rect mainPanelRect = new Rect(0.0f, 0.0f, 70f, 85f);
+private Panel mainPanel;
+private Button upButton;
+private Button downButton;
+private Button setIncrementButton;
+private Button ImportOldDataButton;
+private TextLabel incrementLabel;
+private TextLabel incrementValue;
+private TextLabel lowestYLabel;
+private TextLabel lowestYValue;
+private TextLabel lowestYDesc;
+private TextLabel currentYLabel;
+private TextLabel currentYValue;
+private Transform Parent;
+private float increment = 0.1f;
+private float lowestY;
+private float fontScale = 0.9f;
+public DecoratorDebugWindow(IUserInterfaceManager uiManager, Transform parent)
+: base(uiManager)
+{
+ParentPanel.BackgroundColor = Color.clear;
+PauseWhileOpen = false;
+Parent = parent;
+}
+protected override void Setup()
+{
+mainPanel = DaggerfallUI.AddPanel(mainPanelRect);
+mainPanel.HorizontalAlignment = HorizontalAlignment.Center;
+mainPanel.VerticalAlignment = VerticalAlignment.Top;
+mainPanel.BackgroundColor = Color.clear;
+mainPanel.Outline.Enabled = true;
+upButton = DaggerfallUI.AddButton(new Vector2(2.0f, 0.0f), new Vector2(15, 10), mainPanel);
+upButton.HorizontalAlignment = HorizontalAlignment.Center;
+upButton.VerticalAlignment = VerticalAlignment.Top;
+upButton.Label.Text = "Up";
+upButton.Label.TextScale = fontScale;
+upButton.Outline.Enabled = true;
+upButton.OnMouseClick += upButton_OnMouseClick;
+downButton = DaggerfallUI.AddButton(new Vector2(2.0f, 12.0f), new Vector2(15, 10), mainPanel);
+downButton.HorizontalAlignment = HorizontalAlignment.Center;
+downButton.Label.Text = "Down";
+downButton.Label.TextScale = fontScale;
+downButton.Outline.Enabled = true;
+downButton.OnMouseClick += downButton_OnMouseClick;
+setIncrementButton = DaggerfallUI.AddButton(new Vector2(0.0f, 35.0f), new Vector2(37, 9), mainPanel);
+setIncrementButton.HorizontalAlignment = HorizontalAlignment.Center;
+setIncrementButton.Label.Text = "Set Increment";
+setIncrementButton.Label.TextScale = fontScale;
+setIncrementButton.Outline.Enabled = true;
+setIncrementButton.OnMouseClick += setIncrementButton_OnMouseClick;
+incrementLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(0.0f, 24.0f), "Increment", mainPanel);
+incrementLabel.HorizontalAlignment = HorizontalAlignment.Center;
+incrementLabel.TextScale = fontScale;
+incrementValue = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(0.0f, 29.0f), "", mainPanel);
+incrementValue.TextScale = fontScale;
+incrementValue.HorizontalAlignment = HorizontalAlignment.Center;
+lowestYLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(1.0f, 48), "Lowest Y: ", mainPanel);
+lowestYLabel.TextScale = fontScale;
+lowestYValue = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(43.0f, 48), "", mainPanel);
+lowestYValue.TextScale = fontScale;
+currentYLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(1.0f, 55), "Target Y: ", mainPanel);
+currentYLabel.TextScale = fontScale;
+currentYValue = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(43.0f, 55), GameManager.Instance.PlayerEnterExit.Interior.transform.position.y.ToString("0.00"), mainPanel);
+currentYValue.TextScale = fontScale;
+NativePanel.Components.Add(mainPanel);
+}
+public override void Update()
+{
+base.Update();
+if (Input.GetKeyUp(hideWindowKey))
+mouselookToggle = !mouselookToggle;
+SetMouselook(mouselookToggle);
+incrementValue.Text = increment.ToString("0.00");
+lowestYValue.Text = lowestY.ToString("0.00");
+}
+public override void OnPush()
+{
+base.OnPush();
+if (!DaggerfallUnity.Settings.SDFFontRendering)
+fontScale = 0.7f;
+lowestY = GetLowestY();
+playerMouseLook = GameManager.Instance.PlayerMouseLook;
+mouselookToggle = false;
+hideWindowKey = InputManager.Instance.GetBinding(InputManager.Actions.Sneak);
+}
+public override void OnPop()
+{
+base.OnPop();
+SetMouselook(true);
+}
+private float GetLowestY()
+{
+float lowest = float.MaxValue;
+if (Parent.childCount > 0)
+{
+foreach (Transform child in Parent)
+{
+if (child.position.y < lowest)
+lowest = child.position.y;
+}
+}
+else
+lowest = float.NaN;
+return lowest;
+}
+private void SetMouselook(bool setting)
+{
+playerMouseLook.enableMouseLook = setting;
+playerMouseLook.lockCursor = setting;
+playerMouseLook.simpleCursorLock = !setting;
+}
+private void upButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+foreach (Transform child in Parent)
+{
+Vector3 newPosition = child.position;
+newPosition.y += increment;
+child.position = newPosition;
+}
+lowestY = GetLowestY();
+}
+private void downButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+foreach (Transform child in Parent)
+{
+Vector3 newPosition = child.position;
+newPosition.y -= increment;
+child.position = newPosition;
+}
+lowestY = GetLowestY();
+}
+private void setIncrementButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+DaggerfallInputMessageBox imb = new DaggerfallInputMessageBox(uiManager, this);
+imb.SetTextBoxLabel("Value:");
+imb.TextPanelDistanceX = 5;
+imb.TextPanelDistanceY = 9;
+imb.TextBox.Text = increment.ToString("0.00");
+imb.TextBox.Numeric = true;
+imb.TextBox.NumericMode = NumericMode.Float;
+imb.TextBox.MaxCharacters = 6;
+imb.OnGotUserInput += (_sender, input) =>
+{
+float value;
+bool result = float.TryParse(input, out value);
+if (!result)
+return;
+increment = value;
+};
+imb.Show();
+}
+}
+}       
