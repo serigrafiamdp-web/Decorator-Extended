@@ -33,3 +33,19 @@
 
 Original mod: **Decorator by Kaedius / KDS-KDS**  
 Extended modifications: **DECORATOR EXTENDED BY RICO**
+
+
+## Source/build closure
+
+The V2 MASTER source has been verified byte-for-byte against the four C# files currently stored in `Scripts/`.
+
+Current binary authority:
+
+- `decorator.dfmod` size: **27,143 bytes**
+- SHA-256: `4f18fa6fd57187de1bfd66a66110729b93f84060a5149295bee72831b58d882c`
+- Exact lossless archive: `tools/MASTER_PASS/decorator-master-pass.b64`
+- Reconstruction verifier: `tools/MASTER_PASS/rebuild_master_pass.py`
+
+The current MASTER dfmod is exactly identical to the UI TEST 09 PASS dfmod.
+
+From this point forward, normal development must be source-first. Do not patch the dfmod directly except for forensic/recovery work.
