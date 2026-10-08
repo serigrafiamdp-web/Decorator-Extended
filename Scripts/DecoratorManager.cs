@@ -557,7 +557,7 @@ try
 {
 System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo();
 psi.FileName = "cmd.exe";
-psi.Arguments = "/c "" + bat + """;
+psi.Arguments = "/c \"" + bat + "\"";
 psi.WorkingDirectory = System.IO.Path.GetDirectoryName(bat);
 psi.UseShellExecute = false;
 psi.CreateNoWindow = true;
@@ -573,7 +573,7 @@ private void LaunchEmulator2()
 {
 string bat=System.IO.Path.Combine(Application.streamingAssetsPath,"Emulators","Fceux","DECORATOR_FCEUX_EMULATOR2.bat");
 if(!System.IO.File.Exists(bat)){Debug.LogError("Decorator Emulator 2: BAT not found: "+bat);return;}
-try{System.Diagnostics.ProcessStartInfo psi=new System.Diagnostics.ProcessStartInfo();psi.FileName="cmd.exe";psi.Arguments="/c ""+bat+""";psi.WorkingDirectory=System.IO.Path.GetDirectoryName(bat);psi.UseShellExecute=false;psi.CreateNoWindow=true;psi.WindowStyle=System.Diagnostics.ProcessWindowStyle.Hidden;System.Diagnostics.Process.Start(psi);}
+try{System.Diagnostics.ProcessStartInfo psi=new System.Diagnostics.ProcessStartInfo();psi.FileName="cmd.exe";psi.Arguments="/c \""+bat+"\"";psi.WorkingDirectory=System.IO.Path.GetDirectoryName(bat);psi.UseShellExecute=false;psi.CreateNoWindow=true;psi.WindowStyle=System.Diagnostics.ProcessWindowStyle.Hidden;System.Diagnostics.Process.Start(psi);}
 catch(Exception ex){Debug.LogError("Decorator Emulator 2 launch failed: "+ex.Message);}
 }
 public void Activate(RaycastHit hit)
