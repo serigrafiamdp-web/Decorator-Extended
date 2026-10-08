@@ -520,4 +520,346 @@ private Dictionary<string, string> bio = new Dictionary<string, string>()
 {"213.10","Vines 3" },
 {"213.11","Logs 1" },
 {"213.12","Logs 2" },
-{"41735", "Large Log __RICOS_CONTINUE__
+{"41735", "Large Log  1" },
+{"41737", "Large Log 1" },
+{"41738", "Large Log 1" },
+{"41237", "a Hedge" },
+};
+private Dictionary<string, string> treasure = new Dictionary<string, string>()
+{
+{"-1", "Treasure" },
+{"200.0", "Silver Goblet" },
+{"200.4", "Silver Goblet, jeweled" },
+{"200.1", "Gold Goblet" },
+{"200.5", "Gold Goblet, jeweled" },
+{"200.3", "Gold Goblet, filled" },
+{"200.6", "Copper Goblet" },
+{"216.0", "Bag on Gold Pile" },
+{"216.37", "Pot on Gold Pile" },
+{"216.1", "Pile of Gold" },
+{"216.39", "Pile of Gold w Gems, Large" },
+{"216.34", "Pile of Gold w Gems, Small" },
+{"216.3", "Gold Ingot" },
+{"216.4", "Gold Coin" },
+{"216.5", "Silver Coin" },
+{"216.6", "Gold Crown" },
+{"216.7", "Silver Crown" },
+{"216.8", "Silver Tiara" },
+{"216.9", "Gold Tiara" },
+{"216.10", "Gem 1" },
+{"216.11", "Gem 2" },
+{"216.12", "Gem 3" },
+{"216.13", "Gem 4" },
+{"216.14", "Gem 5" },
+{"216.15", "Gem 6" },
+{"216.16", "Gem 7" },
+{"216.17", "Gem 8" },
+{"216.18", "Gems 1" },
+{"216.19", "Gems 2" },
+{"216.46", "Chest w Gold 1" },
+{"216.47", "Chest w Gold 2" },
+};
+private Dictionary<string, string> statues = new Dictionary<string, string>()
+{
+{"-1", "Statues" },
+{"97.0", "Statue 1" },
+{"97.1", "Statue 2" },
+{"97.2", "Statue 3" },
+{"97.3", "Statue 4" },
+{"97.4", "Statue 5" },
+{"97.5", "Statue 6" },
+{"97.6", "Statue 7" },
+{"97.7", "Statue 8" },
+{"97.8", "Statue 9" },
+{"97.9", "Statue 10" },
+{"97.10", "Statue 11" },
+{"97.11", "Statue 12" },
+{"97.13", "Statue 13" },
+{"97.14", "Statue 14" },
+{"97.15", "Statue 15" },
+{"97.16", "Statue 16" },
+{"97.17", "Statue 17" },
+{"97.18", "Statue 18" },
+{"97.19", "Statue 19" },
+{"97.20", "Statue 20" },
+{"97.21", "Statue 21" },
+};
+private List<Dictionary<string, string>> dictionaryList = new List<Dictionary<string, string>>();
+private Dictionary<string, string> currentDictionary;
+#endregion Fields
+#region Properties
+private Transform Player
+{ get { return GameManager.Instance.PlayerObject.transform; } }
+private AudioClip ClickSound
+{ get { return DecoratorManager.Instance.DecoratorAudio.GetAudioClip(360); } }
+#endregion Properties
+#region Constructor
+public DecoratorWindow(IUserInterfaceManager uiManager, Transform parent)
+: base(uiManager)
+{
+ParentPanel.BackgroundColor = Color.clear;
+PauseWhileOpen = false;
+Parent = parent;
+dictionaryList.AddRange(new List<Dictionary<string, string>>() { common, containers, lights, wall, library, misc1, misc2, alchemy, bio, treasure, statues, pixel });
+}
+#endregion Constructor
+#region Setup
+protected override void Setup()
+{
+LoadTextures();
+mainPanel = DaggerfallUI.AddPanel(mainPanelRect);
+mainPanel.HorizontalAlignment = HorizontalAlignment.Left;
+mainPanel.BackgroundColor = Color.clear;
+mainPanel.Outline.Enabled =false;
+mainPanel.VerticalAlignment = VerticalAlignment.Top;
+listPanel = DaggerfallUI.AddPanel(listPanelRect);
+listPanel.HorizontalAlignment = HorizontalAlignment.Left;
+listPanel.BackgroundColor = Color.clear;
+listPanel.Outline.Enabled =false;
+pageSpinner = new LeftRightSpinner();
+pageSpinner.Value = 1;
+pageSpinner.HorizontalAlignment = HorizontalAlignment.Left;
+pageSpinner.VerticalAlignment = VerticalAlignment.Top;
+pageSpinner.OnLeftButtonClicked += Page_OnLeftButtonClicked;
+pageSpinner.OnRightButtonClicked += Page_OnRightButtonClicked;
+listPanel.Components.Add(pageSpinner);
+transformPanel = DaggerfallUI.AddPanel(transformPanelRect);
+transformPanel.HorizontalAlignment = HorizontalAlignment.Right;
+transformPanel.VerticalAlignment = VerticalAlignment.Top;
+transformSubPanel1 = DaggerfallUI.AddPanel(transformSubPanel1Rect, transformPanel);
+transformSubPanel1.BackgroundTexture = transformSubPanelTexture1;
+transformSubPanel2 = DaggerfallUI.AddPanel(transformSubPanel2Rect, transformPanel);
+transformSubPanel2.BackgroundColor = Color.clear;
+debugButton = DaggerfallUI.AddButton(new Vector2(73, 54), new Vector2(7, 5), transformPanel);
+debugButton.HorizontalAlignment = HorizontalAlignment.Right;
+debugButton.ClickSound = ClickSound;
+debugButton.OnMouseClick += DebugButton_OnMouseClick;
+debugButton.Label.Text = "DBG";
+debugButton.Label.TextScale = 0.75f;
+debugButton.Enabled = DecoratorManager.Instance.DecoratorDebug;
+// RICOS UI V2: transparent top-right layout; LOW / MED / HIGH remain removed.
+// RICOS UI TEST 08: font scale normalized to 0.75; main checkbox rows remain y=2/10/18/26.
+rotateLeftButton = DaggerfallUI.AddButton(rotateLeftButtonRect, transformSubPanel1);
+rotateLeftButton.ClickSound = ClickSound;
+rotateLeftButton.OnMouseClick += RotateLeftButton_OnMouseClick;
+rotateRightButton = DaggerfallUI.AddButton(rotateRightButtonRect, transformSubPanel1);
+rotateRightButton.ClickSound = ClickSound;
+rotateRightButton.OnMouseClick += RotateRightButton_OnMouseClick;
+upButton = DaggerfallUI.AddButton(upButtonRect, transformSubPanel1);
+upButton.ClickSound = ClickSound;
+upButton.OnMouseClick += UpButton_OnMouseClick;
+downButton = DaggerfallUI.AddButton(downButtonRect, transformSubPanel1);
+downButton.ClickSound = ClickSound;
+downButton.OnMouseClick += DownButton_OnMouseClick;
+leftButton = DaggerfallUI.AddButton(leftButtonRect, transformSubPanel1);
+leftButton.ClickSound = ClickSound;
+leftButton.OnMouseClick += LeftButton_OnMouseClick;
+rightButton = DaggerfallUI.AddButton(rightButtonRect, transformSubPanel1);
+rightButton.ClickSound = ClickSound;
+rightButton.OnMouseClick += RightButton_OnMouseClick;
+rotateXZRightButton = DaggerfallUI.AddButton(rotateXZRightButtonRect, transformSubPanel1);
+rotateXZRightButton.ClickSound = ClickSound;
+rotateXZRightButton.OnMouseClick += RotateXZRightButton_OnMouseClick;
+rotateXZLeftButton = DaggerfallUI.AddButton(rotateXZLeftButtonRect, transformSubPanel1);
+rotateXZLeftButton.ClickSound = ClickSound;
+rotateXZLeftButton.OnMouseClick += RotateXZLeftButton_OnMouseClick;
+acceptButton = DaggerfallUI.AddButton(acceptButtonRect, transformSubPanel1);
+acceptButton.ClickSound = ClickSound;
+acceptButton.OnMouseClick += AcceptButton_OnMouseClick;
+snapCheckbox = DaggerfallUI.AddCheckbox(new Vector2(34.0f, 10.0f), false, transformPanel);
+snapCheckbox.Label.Text = "Snap";
+snapCheckbox.Label.TextScale = 0.75f;
+editCheckBox = DaggerfallUI.AddCheckbox(new Vector2(34.0f, 2.0f), false, transformPanel);
+editCheckBox.Label.Text = "Edit";
+editCheckBox.Label.TextScale = 0.75f;
+editCheckBox.OnMouseClick += EditButton_OnMouseClick;
+resetButton = DaggerfallUI.AddButton(resetButtonRect, transformPanel);
+resetButton.Label.Text = "Reset";
+resetButton.Label.TextScale = 0.75f;
+resetButton.ClickSound = ClickSound;
+                                                           
+resetButton.OnMouseClick += ResetObjectButton_OnMouseClick;
+deleteButton = DaggerfallUI.AddButton(deleteButtonRect, transformPanel);
+deleteButton.Label.Text = "Delete";
+deleteButton.Label.TextScale = 0.75f;
+deleteButton.ClickSound = ClickSound;
+deleteButton.OnMouseClick += DeleteButton_OnMouseClick;
+deleteButton.Enabled = false;
+lightCheckbox = DaggerfallUI.AddCheckbox(new Vector2(34.0f, 18.0f), false, transformPanel);
+lightCheckbox.Label.Text = "Light";
+lightCheckbox.Label.TextScale = 0.75f;
+scaleCheckBox = DaggerfallUI.AddCheckbox(new Vector2(34.0f, 26.0f), false, transformPanel);
+scaleCheckBox.Label.Text = "Scale";
+scaleCheckBox.Label.TextScale = 0.75f;
+containerCheckbox = DaggerfallUI.AddCheckbox(new Vector2(63.0f, 2.0f), false, transformPanel);
+containerCheckbox.Label.Text = "Container";
+containerCheckbox.Label.TextScale = 0.75f;
+containerCheckbox.OnMouseClick += OnCheckboxClicked;
+potionMakerCheckbox = DaggerfallUI.AddCheckbox(new Vector2(63.0f, 10.0f), false, transformPanel);
+potionMakerCheckbox.Label.Text = "Potion";
+potionMakerCheckbox.Label.TextScale = 0.75f;
+potionMakerCheckbox.OnMouseClick += OnCheckboxClicked;
+if (!potionRank)
+potionMakerCheckbox.Enabled = false;
+spellMakerCheckbox = DaggerfallUI.AddCheckbox(new Vector2(63.0f, 18.0f), false, transformPanel);
+spellMakerCheckbox.Label.Text = "Spell";
+spellMakerCheckbox.Label.TextScale = 0.75f;
+spellMakerCheckbox.OnMouseClick += OnCheckboxClicked;
+if (!spellRank)
+spellMakerCheckbox.Enabled = false;
+itemMakerCheckbox = DaggerfallUI.AddCheckbox(new Vector2(63.0f, 26.0f), false, transformPanel);
+itemMakerCheckbox.Label.Text = "Item";
+itemMakerCheckbox.Label.TextScale = 0.75f;
+itemMakerCheckbox.OnMouseClick += OnCheckboxClicked;
+if (!itemRank)
+itemMakerCheckbox.Enabled = false;
+emulatorCheckbox = DaggerfallUI.AddCheckbox(new Vector2(111.0f, 2.0f), false, transformPanel);
+emulatorCheckbox.Label.Text = "Emulator";
+emulatorCheckbox.Label.TextScale = 0.75f;
+        emulatorCheckbox.OnMouseClick += OnCheckboxClicked;
+emulator2Checkbox = DaggerfallUI.AddCheckbox(new Vector2(111.0f, 10.0f), false, transformPanel);
+emulator2Checkbox.Label.Text = "Emulator 2";
+emulator2Checkbox.Label.TextScale = 0.75f;
+        emulator2Checkbox.OnMouseClick += OnCheckboxClicked;
+lightPanel = DaggerfallUI.AddPanel(lightPanelRect);
+lightPanel.BackgroundColor = Color.clear;
+lightPanel.Outline.Enabled =false;
+lightPanel.Enabled = false;
+lightSpotCheckbox = DaggerfallUI.AddCheckbox(new Vector2(1.0f, 1.0f), false, lightPanel);
+lightSpotCheckbox.Label.Text = "Spot";
+lightSpotCheckbox.Label.TextScale = 0.75f;
+colorPicker = DaggerfallUI.AddColorPicker(new Vector2(0.0f, 18.0f), Color.white, uiManager, this, lightPanel);
+colorPicker.HorizontalAlignment = HorizontalAlignment.Right;
+colorPicker.VerticalAlignment = VerticalAlignment.Top;
+colorPicker.Label.Text = "Light Color";
+colorPicker.Label.TextScale = 0.75f;
+colorPicker.Label.TextColor = Color.black;
+colorPicker.Label.ShadowColor = colorPicker.BackgroundColor;
+colorPicker.Scale = new Vector2(10.0f, 10.0f);
+colorPicker.OnMouseClick += (sender, position) =>
+{
+colorPickerEnabled = true;
+};
+float numOffset = -60.0f;
+TextLabel lightIntensityLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(0.0f, 9.0f), "Intensity", lightPanel);
+lightIntensityLabel.TextScale = 0.75f;
+lightIntensityLabel.ShadowColor = Color.black;
+lightIntensityLabel.HorizontalAlignment = HorizontalAlignment.Center;
+TextLabel lightSpotAngleLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(0.0f, 20.0f), "Spot Angle", lightPanel);
+lightSpotAngleLabel.TextScale = 0.75f;
+lightSpotAngleLabel.ShadowColor = Color.black;
+lightSpotAngleLabel.HorizontalAlignment = HorizontalAlignment.Center;
+TextLabel lightVerticalRotationLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(0.0f, 31.0f), "Rotation Vert", lightPanel);
+lightVerticalRotationLabel.TextScale = 0.75f;
+lightVerticalRotationLabel.ShadowColor = Color.black;
+lightVerticalRotationLabel.HorizontalAlignment = HorizontalAlignment.Center;
+TextLabel lightHorizontalRotationLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(0.0f, 42.0f), "Rotation Horiz", lightPanel);
+lightHorizontalRotationLabel.TextScale = 0.75f;
+lightHorizontalRotationLabel.ShadowColor = Color.black;
+lightHorizontalRotationLabel.HorizontalAlignment = HorizontalAlignment.Center;
+lightIntensitySlider = DaggerfallUI.AddSlider(new Vector2(0.0f, 15.0f), (x) => x.SetIndicator(0f, 5f, 1f), 0.9f, lightPanel);
+lightIntensitySlider.Indicator.HorzPixelScrollOffset = numOffset;
+lightIntensitySlider.HorizontalAlignment = HorizontalAlignment.Center;
+lightIntensitySlider.OnRightMouseClick += Slider_OnRightMouseClick;
+lightSpotAngleSlider = DaggerfallUI.AddSlider(new Vector2(0.0f, 26f), (x) => x.SetIndicator(0f, 180f, 90f), 0.9f, lightPanel);
+lightSpotAngleSlider.Indicator.HorzPixelScrollOffset = numOffset;
+lightSpotAngleSlider.HorizontalAlignment = HorizontalAlignment.Center;
+lightSpotAngleSlider.OnRightMouseClick += Slider_OnRightMouseClick;
+lightVerticalRotationSlider = DaggerfallUI.AddSlider(new Vector2(0.0f, 37f), (x) => x.SetIndicator(0f, 360f, 90f), 0.9f, lightPanel);
+lightVerticalRotationSlider.Indicator.HorzPixelScrollOffset = numOffset;
+lightVerticalRotationSlider.HorizontalAlignment = HorizontalAlignment.Center;
+lightVerticalRotationSlider.OnRightMouseClick += Slider_OnRightMouseClick;
+lightHorizontalRotationSlider = DaggerfallUI.AddSlider(Vector2.zero, (x) => x.SetIndicator(0f, 360f, 90f), 0.9f, lightPanel);
+lightHorizontalRotationSlider.Indicator.HorzPixelScrollOffset = numOffset;
+lightHorizontalRotationSlider.HorizontalAlignment = HorizontalAlignment.Center;
+lightHorizontalRotationSlider.VerticalAlignment = VerticalAlignment.Bottom;
+lightHorizontalRotationSlider.OnRightMouseClick += Slider_OnRightMouseClick;
+scalePanel = DaggerfallUI.AddPanel(scalePanelRect);
+scalePanel.BackgroundColor = Color.clear;
+scalePanel.Outline.Enabled =false;
+scalePanel.Enabled = false;
+scaleResetButton = DaggerfallUI.AddButton(scaleResetButtonRect, scalePanel);
+scaleResetButton.HorizontalAlignment = HorizontalAlignment.Center;
+scaleResetButton.VerticalAlignment = VerticalAlignment.Top;
+scaleResetButton.Label.Text = "Reset";
+scaleResetButton.Label.TextScale = 0.75f;
+scaleResetButton.OnMouseClick += ScaleResetButton_OnMouseClick;
+TextLabel scaleXLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(0.0f, 8.0f), "X Scale", scalePanel);
+scaleXLabel.TextScale = 0.75f;
+scaleXLabel.ShadowColor = Color.black;
+scaleXLabel.HorizontalAlignment = HorizontalAlignment.Center;
+TextLabel scaleYLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(0.0f, 19.0f), "Y Scale", scalePanel);
+scaleYLabel.TextScale = 0.75f;
+scaleYLabel.ShadowColor = Color.black;
+scaleYLabel.HorizontalAlignment = HorizontalAlignment.Center;
+TextLabel scaleZLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(0.0f, 30.0f), "Z Scale", scalePanel);
+scaleZLabel.TextScale = 0.75f;
+scaleZLabel.ShadowColor = Color.black;
+scaleZLabel.HorizontalAlignment = HorizontalAlignment.Center;
+scaleXSlider = DaggerfallUI.AddSlider(new Vector2(0.0f, 14f), (x) => x.SetIndicator(0.1f, 3.0f, 1.0f), 0.9f, scalePanel);
+scaleXSlider.Indicator.HorzPixelScrollOffset = numOffset;
+scaleXSlider.HorizontalAlignment = HorizontalAlignment.Center;
+scaleXSlider.OnRightMouseClick += Slider_OnRightMouseClick;
+scaleYSlider = DaggerfallUI.AddSlider(new Vector2(0.0f, 25f), (x) => x.SetIndicator(0.1f, 3.0f, 1.0f), 0.9f, scalePanel);
+scaleYSlider.Indicator.HorzPixelScrollOffset = numOffset;
+scaleYSlider.HorizontalAlignment = HorizontalAlignment.Center;
+scaleYSlider.OnRightMouseClick += Slider_OnRightMouseClick;
+scaleZSlider = DaggerfallUI.AddSlider(Vector2.zero, (x) => x.SetIndicator(0.1f, 3.0f, 1.0f), 0.9f, scalePanel);
+scaleZSlider.Indicator.HorzPixelScrollOffset = numOffset;
+scaleZSlider.HorizontalAlignment = HorizontalAlignment.Center;
+scaleZSlider.VerticalAlignment = VerticalAlignment.Bottom;
+scaleZSlider.OnRightMouseClick += Slider_OnRightMouseClick;
+NativePanel.Components.Add(mainPanel);
+NativePanel.Components.Add(listPanel);
+NativePanel.Components.Add(transformPanel);
+NativePanel.Components.Add(lightPanel);
+NativePanel.Components.Add(scalePanel);
+GenerateButtons(dictionaryList);
+}
+private void DebugButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+PopWindow();
+DaggerfallUI.UIManager.PushWindow(new DecoratorDebugWindow(DaggerfallUI.UIManager, Parent));
+}
+private void LoadTextures()
+{
+Rect arrowsRect = new Rect(0, 25, 108, 41);
+transformSubPanelTexture1 = ImageReader.GetSubTexture(ImageReader.GetTexture("CNFG04I0.IMG"), arrowsRect);
+Color32[] pixels = transformSubPanelTexture1.GetPixels32();
+for (int i = 0; i < pixels.Length; i++)
+{
+Color32 c = pixels[i];
+if (!(c.b > c.r + 12 && c.b > c.g + 4))
+pixels[i] = new Color32(c.r, c.g, c.b, 0);
+}
+transformSubPanelTexture1.SetPixels32(pixels);
+transformSubPanelTexture1.Apply();
+transformSubPanelTexture2 = null;
+}
+#endregion Setup
+#region Unity
+public override void Update()
+{
+base.Update();
+playerActivate.SetClickDelay(1.0f);
+if (Input.GetKeyUp(KeyCode.Escape))
+{
+if (colorPickerEnabled)
+{
+colorPickerEnabled = false;
+}
+}
+if (Input.GetKeyUp(hideWindowKey))
+mouselookToggle = !mouselookToggle;
+SetMouselook(mouselookToggle);
+if (editMode)
+EditMode();
+if (previewGo != null)
+{
+if (lightCheckbox.IsChecked)
+{
+if (mouselookToggle)
+lightPanel.Enabled = false;
+else
+lightPanel.Enabled = true;
+if (previ__RICOS_CONTINUE__
