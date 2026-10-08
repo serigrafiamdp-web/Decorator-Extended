@@ -862,4 +862,586 @@ if (mouselookToggle)
 lightPanel.Enabled = false;
 else
 lightPanel.Enabled = true;
-if (previ__RICOS_CONTINUE__
+if (previewLight != null)
+{
+if (lightSpotCheckbox.IsChecked)
+previewLight.type = LightType.Spot;
+else
+previewLight.type = LightType.Point;
+previewLight.color = colorPicker.BackgroundColor;
+previewLight.intensity = lightIntensitySlider.GetValue();
+previewLight.spotAngle = lightSpotAngleSlider.GetValue();
+previewLight.transform.localEulerAngles = new Vector3(lightVerticalRotationSlider.GetValue(), lightHorizontalRotationSlider.GetValue(), 0.0f);
+previewLight.enabled = true;
+}
+}
+else
+{
+lightPanel.Enabled = false;
+if (previewLight != null)
+previewLight.enabled = false;
+}
+if (scaleCheckBox.IsChecked)
+{
+if (mouselookToggle)
+scalePanel.Enabled = false;
+else
+scalePanel.Enabled = true;
+previewGo.transform.localScale = new Vector3(scaleXSlider.GetValue(), scaleYSlider.GetValue(), scaleZSlider.GetValue());
+}
+else
+{
+scalePanel.Enabled = false;
+previewGo.transform.localScale = Vector3.one;
+}
+if (snapCheckbox.IsChecked)
+{
+SetObjectHeight(goHeight);
+SetObjectPosition();
+}
+}
+}
+public override void OnPush()
+{
+base.OnPush();
+GuildManager guildManager = GameManager.Instance.GuildManager;
+if (DecoratorManager.Instance.GuildRestriction)
+{
+if (guildManager.GetGuild(FactionFile.GuildGroups.MagesGuild).CanAccessService(GuildServices.MakeSpells) ||
+guildManager.GetGuild(FactionFile.GuildGroups.HolyOrder).CanAccessService(GuildServices.MakeSpells))
+spellRank = true;
+if (guildManager.GetGuild(FactionFile.GuildGroups.HolyOrder).CanAccessService(GuildServices.MakePotions) ||
+guildManager.GetGuild(FactionFile.GuildGroups.DarkBrotherHood).CanAccessService(GuildServices.MakePotions))
+potionRank = true;
+if (guildManager.GetGuild(FactionFile.GuildGroups.HolyOrder).CanAccessService(GuildServices.MakeMagicItems) ||
+guildManager.GetGuild(FactionFile.GuildGroups.MagesGuild).CanAccessService(GuildServices.MakeMagicItems))
+itemRank = true;
+}
+else
+{
+spellRank = true;
+potionRank = true;
+itemRank = true;
+}
+playerActivate = GameManager.Instance.PlayerActivate;
+playerMouseLook = GameManager.Instance.PlayerMouseLook;
+// RICOS: Decorator allows the player to walk while its UI owns the camera.
+// DFU HeadBobber rotates MainCamera while walking; with mouselook disabled that
+// rotation can accumulate frame after frame and make the view sink toward floor.
+decoratorHeadBobber = GameManager.Instance.PlayerObject.GetComponent<HeadBobber>();
+if (decoratorHeadBobber != null)
+{
+decoratorHeadBobberWasEnabled = decoratorHeadBobber.enabled;
+decoratorHeadBobber.enabled = false;
+GameManager.Instance.MainCamera.transform.localPosition = decoratorHeadBobber.RestPos;
+}
+// Clear any bob rotation already present, preserving the player's real facing.
+playerMouseLook.SetFacing(playerMouseLook.Yaw, playerMouseLook.Pitch);
+mouselookToggle = false;
+hideWindowKey = InputManager.Instance.GetBinding(InputManager.Actions.Sneak);
+}
+public override void OnPop()
+{
+base.OnPop();
+ClearEditHighlight();
+if (previewGo != null)
+{
+if (editMode)
+DecoratorHelper.SetPlacedObject(lastPlacedObjectData, previewGo);
+else
+GameObject.Destroy(previewGo);
+}
+previewLight = null;
+previewCollider = null;
+listPanel.Components.Clear();
+if (decoratorHeadBobber != null)
+{
+decoratorHeadBobber.enabled = decoratorHeadBobberWasEnabled;
+decoratorHeadBobber = null;
+}
+SetMouselook(true);
+}
+public override void OnReturn()
+{
+base.OnReturn();
+GameManager.Instance.PauseGame(false);
+}
+#endregion Unity
+#region Private Methods
+private void EditMode()
+{
+if (Input.GetMouseButtonDown(0))
+{
+if (CheckClick())
+return;
+Camera mainCamera = GameManager.Instance.MainCamera;
+Vector3 screenPos = Input.mousePosition;
+RaycastHit hit;
+Ray ray;
+if (DaggerfallUnity.Settings.RetroRenderingMode > 0)
+{
+float largeHUDHeight = 0;
+if (DaggerfallUI.Instance.DaggerfallHUD != null && DaggerfallUI.Instance.DaggerfallHUD.LargeHUD.Enabled && DaggerfallUnity.Settings.LargeHUDDocked)
+largeHUDHeight = DaggerfallUI.Instance.DaggerfallHUD.LargeHUD.ScreenHeight;
+float xm = Input.mousePosition.x / Screen.width;
+float ym = (Input.mousePosition.y - largeHUDHeight) / (Screen.height - largeHUDHeight);
+Vector2 retroMousePos = new Vector2(mainCamera.targetTexture.width * xm, mainCamera.targetTexture.height * ym);
+ray = mainCamera.ScreenPointToRay(retroMousePos);
+}
+else
+ray = mainCamera.ScreenPointToRay(screenPos);
+if (Physics.Raycast(ray, out hit, 15f))
+{
+PlacedObject placedObject;
+if (placedObject = hit.transform.GetComponent<PlacedObject>())
+{
+PlacedObjectData_v2 placedObjectData = placedObject.GetData();
+if (previewGo != null)
+{
+ClearEditHighlight();
+DecoratorHelper.SetPlacedObject(lastPlacedObjectData, previewGo);
+}
+lastPlacedObjectData = placedObject.GetData();
+if (placedObjectData.isLight)
+{
+if (placedObjectData.lightType == LightType.Point)
+lightSpotCheckbox.IsChecked = false;
+else
+lightSpotCheckbox.IsChecked = true;
+colorPicker.BackgroundColor = placedObjectData.lightColor;
+lightIntensitySlider.SetValue(placedObjectData.lightIntensity);
+lightSpotAngleSlider.SetValue(placedObjectData.lightSpotAngle);
+lightHorizontalRotationSlider.SetValue(placedObjectData.lightHorizontalRotation);
+lightVerticalRotationSlider.SetValue(placedObjectData.lightVerticalRotation);
+lightCheckbox.IsChecked = true;
+}
+else
+{
+lightCheckbox.IsChecked = false;
+ResetLight();
+placedObjectData.isLight = true;
+}
+if (placedObjectData.localScale != Vector3.one)
+{
+scaleCheckBox.IsChecked = true;
+scaleXSlider.SetValue(placedObjectData.localScale.x);
+scaleYSlider.SetValue(placedObjectData.localScale.y);
+scaleZSlider.SetValue(placedObjectData.localScale.z);
+}
+else
+{
+scaleCheckBox.IsChecked = false;
+ResetScale();
+}
+containerCheckbox.IsChecked = placedObjectData.isContainer;
+potionMakerCheckbox.IsChecked = placedObjectData.isPotionMaker;
+spellMakerCheckbox.IsChecked = placedObjectData.isSpellMaker;
+itemMakerCheckbox.IsChecked = placedObjectData.isItemMaker;
+emulatorCheckbox.IsChecked = placedObjectData.isEmulator;
+emulator2Checkbox.IsChecked = placedObjectData.isEmulator2;
+DecoratorHelper.SetPlacedObject(placedObjectData, placedObject.gameObject);
+previewGo = placedObject.gameObject;
+previewCollider = placedObject.GetComponent<BoxCollider>();
+previewLight = placedObject.transform.GetComponentInChildren<Light>();
+IgnoreRaycasts(previewGo);
+ApplyEditHighlight(previewGo);
+}
+}
+}
+}
+private void SetPreviewGameObject(PlacedObjectData_v2 data, Transform parent)
+{
+if (previewGo != null)
+{
+if (data == lastPlacedObjectData)
+return;
+GameObject.Destroy(previewGo);
+ResetPreview();
+}
+data.lightColor = colorPicker.BackgroundColor;
+data.lightIntensity = lightIntensitySlider.GetValue();
+data.lightSpotAngle = lightSpotAngleSlider.GetValue();
+if (lightSpotCheckbox.IsChecked)
+data.lightType = LightType.Spot;
+else
+data.lightType = LightType.Point;
+data.lightHorizontalRotation = lightHorizontalRotationSlider.GetValue();
+data.lightVerticalRotation = lightVerticalRotationSlider.GetValue();
+previewGo = DecoratorHelper.CreatePlacedObject(data, parent, true);
+previewCollider = previewGo.GetComponent<BoxCollider>();
+previewLight = previewGo.transform.GetComponentInChildren<Light>();
+IgnoreRaycasts(previewGo);
+ResetTransform();
+lastPlacedObjectData = data;
+}
+private void GenerateButtons(List<Dictionary<string, string>> dictionaryList)
+{
+float xPosition = 0f;
+float yPosition = 0f;
+float scale = 0.75f; // RICOS UI TEST 08: normalized primary menu font scale
+foreach (Dictionary<string, string> dictionary in dictionaryList)
+{
+string name = DecoratorHelper.Parse("-1", dictionary).name;
+float xSize = name.Length * 3f;
+if (xPosition + xSize > mainPanel.Size.x)
+{
+xPosition = 0f;
+yPosition = 10f;
+}
+Vector2 position = new Vector2(xPosition, yPosition);
+Vector2 size = new Vector2(xSize, 9f);
+Button button = DaggerfallUI.AddButton(position, size, mainPanel);
+button.Label.Text = name;
+button.Label.TextScale = scale;
+button.Label.ShadowColor = Color.black;
+button.OnMouseClick += (sender, pos) =>
+{
+currentDictionary = dictionary;
+PopulateList(dictionary, 1);
+};
+xPosition += xSize;
+}
+}
+private void PopulateList(Dictionary<string, string> dictionary, int page)
+{
+float listPosition = 10f;
+float yPos = 8.0f;
+int items = 0;
+pages = 1;
+pageSpinner.Value = page;
+listPanel.Components.Clear();
+listPanel.Components.Add(pageSpinner);
+foreach (KeyValuePair<string, string> entry in dictionary)
+{
+if (entry.Key == "-1")
+continue;
+int itemsPerPage = 16;
+if (page == 1)
+{
+if (items > itemsPerPage)
+{
+pages = 2;
+break;
+}
+}
+else if (page == 2)
+{
+if (items <= itemsPerPage)
+{
+items++;
+pages = 2;
+continue;
+}
+else if (items > itemsPerPage * 2)
+{
+pages = 3;
+break;
+}
+}
+else if (page == 3)
+{
+if (items <= itemsPerPage * 2)
+{
+items++;
+pages = 3;
+continue;
+}
+else if (items > itemsPerPage * 3)
+{
+pages = 4;
+break;
+}
+}
+else if (page == 4)
+{
+if (items <= itemsPerPage * 3)
+{
+items++;
+pages = 4;
+continue;
+}
+else if (items > itemsPerPage * 4)
+{
+pages = 5;
+break;
+}
+}
+else if (page == 5)
+{
+if (items <= itemsPerPage * 4)
+{
+items++;
+pages = 5;
+continue;
+}
+else if (items > itemsPerPage * 5)
+{
+pages = 6;
+break;
+}
+}
+else if (page == 6)
+{
+if (items <= itemsPerPage * 5)
+{
+items++;
+pages = 5;
+continue;
+}
+else if (items > itemsPerPage * 6)
+{
+pages = 6;
+break;
+}
+}
+PlacedObjectData_v2 data = new PlacedObjectData_v2();
+data = DecoratorHelper.Parse(entry.Key, dictionary);
+Vector2 position = new Vector2(1.0f, listPosition);
+Vector2 size = new Vector2((data.name.Length * 5f), 5f);
+Rect rect = new Rect(position, size);
+Button button = DaggerfallUI.AddButton(rect, listPanel);
+button.Label.Text = data.name;
+button.Label.TextScale = 0.75f;
+button.Label.ShadowColor = Color.black;
+button.ClickSound = ClickSound;
+button.Label.HorizontalAlignment = HorizontalAlignment.Left;
+button.OnMouseClick += (sender, pos) =>
+{
+SetPreviewGameObject(data, Player);
+};
+listPosition += yPos;
+items++;
+}
+}
+private void SetObjectPosition()
+{
+snapRay.origin = Player.position;
+snapRay.direction = Player.forward;
+if (Physics.Raycast(snapRay, out snapRayHit, 5.0f))
+{
+if (previewCollider.size.z > 0)
+GetRotation();
+Vector3 snapPosition = Player.InverseTransformPoint(snapRayHit.point);
+snapPosition.y = previewGo.transform.localPosition.y;
+snapPosition.z -= GetOffset();
+previewGo.transform.localPosition = snapPosition;
+lastPosition = snapPosition;
+}
+else
+previewGo.transform.localPosition = lastPosition;
+}
+private void SetObjectHeight(int setting)
+{
+if (previewGo == null)
+return;
+if (setting == 0)
+return;
+Vector3 origin = previewCollider.transform.TransformPoint(previewCollider.center);
+Vector3 originOffset = previewCollider.transform.position - origin;
+Vector3 direction;
+if (setting == 2)
+{
+Vector3 newPos = defaultPosition;
+newPos.y += 0.3f;
+previewGo.transform.localPosition = lastPosition = newPos;
+return;
+}
+float yOffset = (previewCollider.size.y / 2) * previewCollider.transform.localScale.y;
+if (previewCollider.size.z == 0)
+yOffset += 0.01f;
+if (setting == 1)
+direction = Vector3.down;
+else
+direction = Vector3.up;
+Ray ray = new Ray(origin, direction);
+RaycastHit hit;
+if (Physics.Raycast(ray, out hit, 5.0f))
+{
+Vector3 position = hit.point;
+if (setting == 1)
+position.y += yOffset;
+else
+position.y -= yOffset;
+position += originOffset;
+if (!editMode)
+previewGo.transform.localPosition = lastPosition = Player.InverseTransformPoint(position);
+else
+previewGo.transform.position = position;
+}
+}
+private float GetOffset()
+{
+float offset;
+float xScale = previewCollider.transform.localScale.x;
+float zScale = previewCollider.transform.localScale.z;
+if (previewCollider.size.z > 0)
+{
+float xOffset = (previewCollider.size.x / 2) * xScale;
+float zOffset = (previewCollider.size.z / 2) * zScale;
+float xCenter = previewCollider.center.x * xScale;
+float zCenter = previewCollider.center.z * zScale;
+if (goRotation == 0 || goRotation == 2)
+offset = zOffset + zCenter;
+else
+offset = xOffset + xCenter;
+}
+else
+offset = (previewCollider.size.x / 2) * xScale;
+offset += 0.2f;
+return offset;
+}
+private void GetRotation()
+{
+if (goRotation == 0)
+previewGo.transform.forward = snapRayHit.normal;
+else if (goRotation == 1)
+previewGo.transform.forward = Vector3.Cross(snapRayHit.normal, Vector3.up);
+else if (goRotation == 2)
+previewGo.transform.forward = -snapRayHit.normal;
+else
+previewGo.transform.forward = Vector3.Cross(snapRayHit.normal, -Vector3.up);
+}
+private void ResetTransform()
+{
+if (previewGo == null)
+return;
+goRotation = 0;
+goHeight = 2;
+if (!editMode)
+{
+previewGo.transform.localPosition = lastPosition = defaultPosition;
+previewGo.transform.forward = -Player.forward;
+}
+else
+{
+DecoratorHelper.SetPlacedObject(lastPlacedObjectData, previewGo);
+IgnoreRaycasts(previewGo);
+}
+}
+private bool CheckClick()
+{
+if (transformPanel.MouseOverComponent ||
+mainPanel.MouseOverComponent ||
+lightPanel.MouseOverComponent ||
+listPanel.MouseOverComponent ||
+scalePanel.MouseOverComponent ||
+transformSubPanel1.MouseOverComponent ||
+transformSubPanel2.MouseOverComponent)
+{
+return true;
+}
+return false;
+}
+private void ResetScale()
+{
+scaleXSlider.SetValue(1.0f);
+scaleYSlider.SetValue(1.0f);
+scaleZSlider.SetValue(1.0f);
+}
+private void ResetPreview()
+{
+ClearEditHighlight();
+previewGo = null;
+previewLight = null;
+previewCollider = null;
+}
+private void ResetLight()
+{
+lightIntensitySlider.SetValue(1.0f);
+lightSpotAngleSlider.SetValue(90.0f);
+lightHorizontalRotationSlider.SetValue(90.0f);
+lightVerticalRotationSlider.SetValue(90.0f);
+colorPicker.BackgroundColor = Color.white;
+lightSpotCheckbox.IsChecked = false;
+}
+private void SetMouselook(bool setting)
+{
+playerMouseLook.enableMouseLook = setting;
+playerMouseLook.lockCursor = setting;
+playerMouseLook.simpleCursorLock = !setting;
+if (!editMode)
+{
+mainPanel.Enabled = !setting;
+transformPanel.Enabled = !setting;
+listPanel.Enabled = !setting;
+}
+}
+private void IgnoreRaycasts(GameObject placedObject)
+{
+placedObject.layer = 2;
+if (placedObject.transform.childCount > 0)
+foreach (Transform child in placedObject.transform)
+IgnoreRaycasts(child.gameObject);
+}
+private void ApplyEditHighlight(GameObject placedObject)
+{
+ClearEditHighlight();
+if (placedObject == null)
+return;
+Shader highlightShader = Shader.Find("Unlit/Transparent");
+if (highlightShader == null)
+highlightShader = Shader.Find("Sprites/Default");
+if (highlightShader == null)
+return;
+Renderer[] renderers = placedObject.GetComponentsInChildren<Renderer>(true);
+foreach (Renderer renderer in renderers)
+{
+if (renderer == null)
+continue;
+Material[] originals = renderer.materials;
+if (originals == null || originals.Length == 0)
+continue;
+editHighlightOriginalMaterials[renderer] = originals;
+Material[] highlighted = new Material[originals.Length];
+for (int i = 0; i < originals.Length; i++)
+{
+Material sourceMaterial = originals[i];
+Material highlightMaterial = new Material(highlightShader);
+if (sourceMaterial != null)
+{
+if (sourceMaterial.mainTexture != null)
+highlightMaterial.mainTexture = sourceMaterial.mainTexture;
+highlightMaterial.mainTextureScale = sourceMaterial.mainTextureScale;
+highlightMaterial.mainTextureOffset = sourceMaterial.mainTextureOffset;
+}
+highlightMaterial.color = new Color(1f, 1f, 0f, 0.45f);
+highlightMaterial.renderQueue = 3100;
+if (highlightMaterial.HasProperty("_ZWrite"))
+highlightMaterial.SetInt("_ZWrite", 0);
+highlighted[i] = highlightMaterial;
+editHighlightMaterials.Add(highlightMaterial);
+}
+renderer.materials = highlighted;
+}
+}
+private void ClearEditHighlight()
+{
+foreach (KeyValuePair<Renderer, Material[]> pair in editHighlightOriginalMaterials)
+{
+if (pair.Key != null)
+pair.Key.materials = pair.Value;
+}
+editHighlightOriginalMaterials.Clear();
+foreach (Material material in editHighlightMaterials)
+{
+if (material != null)
+GameObject.Destroy(material);
+}
+editHighlightMaterials.Clear();
+}
+#endregion Private Methods
+#region Events
+#region Transform Panel
+private void AcceptButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+{
+if (previewGo == null)
+return;
+PlacedObject placedObject = previewGo.GetComponent<PlacedObject>();
+PlacedObjectData_v2 data = placedObject.GetData();
+if (lightCheckbox.IsChecked)
+{
+data.isLight = true;
+data.lightColor = colorPicker.BackgroundColor;
+data.lightIntensity = lightIntensitySlider.GetValue();
+if (lightSpotCheckbox.IsChecked)
+data.li__RICOS_CONTINUE__
