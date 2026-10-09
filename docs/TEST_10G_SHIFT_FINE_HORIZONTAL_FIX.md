@@ -1,6 +1,6 @@
 # DECORATOR TEST 10G — SHIFT FINE HORIZONTAL FIX
 
-Status: **PENDING PASS/FAIL**
+Status: **PASS**
 
 Base: **TEST 10E CAMERA-RELATIVE TRANSLATION = PASS**
 
@@ -30,3 +30,8 @@ Runtime `decorator.dfmod`:
 Test ZIP:
 - `DECORATOR_TEST_10G_SHIFT_FINE_HORIZONTAL_FIX.zip`
 - SHA-256: `aebeb52c499858f4c2c1f3ba71e73ca41ebfae6e6b1a3aa9d5ed0ccbb1e036ef`
+
+
+## User validation
+
+PASS confirmed in runtime. Existing placed decorations load normally. Left/Right fast movement works at 0.10, and Shift + Left/Right provides fine 0.02 movement.
