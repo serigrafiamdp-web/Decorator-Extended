@@ -81,7 +81,7 @@ private HorizontalSlider lightHorizontalRotationSlider;
 private HorizontalSlider lightVerticalRotationSlider;
 private Button colorPicker;
 private Rect scalePanelRect = new Rect(230.0f, 54.0f, 90.0f, 40.0f);
-// RICOS UI TEST 09: Light submenu positioned below the Scale                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+// RICOS UI TEST 09: Light submenu positioned below the Scale                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 private Rect scaleResetButtonRect = new Rect(0.0f, 0.0f, 25.0f, 10.0f);
 private Panel scalePanel;
 private Button scaleResetButton;
@@ -1523,18 +1523,9 @@ else{Vector3 p=previewGo.transform.InverseTransformPoint(previewGo.transform.pos
 }
 else{previewGo.transform.position-=CamMove(false)*.02f;if(!editMode)lastPosition=previewGo.transform.localPosition;}
 }
-private void LeftButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
-{
-if(previewGo==null)return;
-previewGo.transform.position-=CamMove(true)*.02f;
-if(!editMode)lastPosition=previewGo.transform.localPosition;
-}
-private void RightButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
-{
-if(previewGo==null)return;
-previewGo.transform.position+=CamMove(true)*.02f;
-if(!editMode)lastPosition=previewGo.transform.localPosition;
-}
+private float LRStep(){return(Input.GetKey(KeyCode.LeftShift)||Input.GetKey(KeyCode.RightShift))?.02f:.10f;}
+private void LeftButton_OnMouseClick(BaseScreenComponent sender,Vector2 position){if(previewGo==null)return;previewGo.transform.position-=CamMove(true)*LRStep();if(!editMode)lastPosition=previewGo.transform.localPosition;}
+private void RightButton_OnMouseClick(BaseScreenComponent sender,Vector2 position){if(previewGo==null)return;previewGo.transform.position+=CamMove(true)*LRStep();if(!editMode)lastPosition=previewGo.transform.localPosition;}
 private void RotateXZLeftButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
 {
 if (previewGo == null)
