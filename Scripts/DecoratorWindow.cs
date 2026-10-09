@@ -1627,7 +1627,7 @@ else
 {
 Quaternion rotation = previewGo.transform.rotation;
 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
-rotation *= Quaternion.Euler(0.0f, 5.0f, 0.0f);
+rotation *= Quaternion.Euler(0.0f, 5.00f, 0.0f);
 else
 rotation *= Quaternion.Euler(0.0f, 1.0f, 0.0f);
 previewGo.transform.rotation = rotation;
@@ -1648,7 +1648,7 @@ else
 {
 Quaternion rotation = previewGo.transform.rotation;
 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
-rotation *= Quaternion.Euler(0.0f, -5.0f, 0.0f);
+rotation *= Quaternion.Euler(0.0f, -5.00f, 0.0f);
 else
 rotation *= Quaternion.Euler(0.0f, -1.0f, 0.0f);
 previewGo.transform.rotation = rotation;
