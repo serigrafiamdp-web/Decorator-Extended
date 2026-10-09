@@ -1,6 +1,6 @@
 # DECORATOR TEST 10C — SNAP UNIVERSAL NEAREST AXIS
 
-Status: **PENDING PASS/FAIL**
+Status: **PASS**
 
 Base:
 - TEST 10A fine diagonal rotation = PASS
@@ -57,3 +57,6 @@ Functional source commit: `877eabb05643c5df844dd43509d1c2950a289e69`
 8. Repeat on an already placed object in Edit mode.
 9. With Snap active, Rotate Left / Right advances in 90-degree steps.
 10. VICE bezel MIN remains functional.
+
+
+Promoted to MASTER on 2026-10-09.
