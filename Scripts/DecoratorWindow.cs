@@ -1596,9 +1596,9 @@ if (previewGo == null)
 return;
 Quaternion rotation = previewGo.transform.rotation;
 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-rotation *= Quaternion.Euler(5.0f, 0.0f, 0.0f);
+rotation *= Quaternion.Euler(1.0f, 0.0f, 0.0f);
 else
-rotation *= Quaternion.Euler(0.0f, 0.0f, -5.0f);
+rotation *= Quaternion.Euler(0.0f, 0.0f, -1.0f);
 previewGo.transform.rotation = rotation;
 }
 private void RotateXZRightButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
@@ -1607,9 +1607,9 @@ if (previewGo == null)
 return;
 Quaternion rotation = previewGo.transform.rotation;
 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-rotation *= Quaternion.Euler(-5.0f, 0.0f, 0.0f);
+rotation *= Quaternion.Euler(-1.0f, 0.0f, 0.0f);
 else
-rotation *= Quaternion.Euler(0.0f, 0.0f, 5.0f);
+rotation *= Quaternion.Euler(0.0f, 0.0f, 1.0f);
 previewGo.transform.rotation = rotation;
 }
 private void RotateLeftButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
@@ -1627,9 +1627,9 @@ else
 {
 Quaternion rotation = previewGo.transform.rotation;
 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
-rotation *= Quaternion.Euler(0.0f, 10.0f, 0.0f);
-else
 rotation *= Quaternion.Euler(0.0f, 5.0f, 0.0f);
+else
+rotation *= Quaternion.Euler(0.0f, 1.0f, 0.0f);
 previewGo.transform.rotation = rotation;
 }
 }
@@ -1648,9 +1648,9 @@ else
 {
 Quaternion rotation = previewGo.transform.rotation;
 if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
-rotation *= Quaternion.Euler(0.0f, -10.0f, 0.0f);
-else
 rotation *= Quaternion.Euler(0.0f, -5.0f, 0.0f);
+else
+rotation *= Quaternion.Euler(0.0f, -1.0f, 0.0f);
 previewGo.transform.rotation = rotation;
 }
 }
