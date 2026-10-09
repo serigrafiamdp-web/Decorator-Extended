@@ -897,8 +897,8 @@ previewGo.transform.localScale = Vector3.one;
 }
 if (snapCheckbox.IsChecked)
 {
-SetObjectHeight(goHeight);
-SetObjectPosition();
+if(editMode)previewGo.transform.localEulerAngles=Vector3.up*Mathf.Round(previewGo.transform.localEulerAngles.y/90)*90;
+else{SetObjectHeight(goHeight);SetObjectPosition();}
 }
 }
 }
@@ -926,9 +926,7 @@ itemRank = true;
 }
 playerActivate = GameManager.Instance.PlayerActivate;
 playerMouseLook = GameManager.Instance.PlayerMouseLook;
-// RICOS: Decorator allows the player to walk while its UI owns the camera.
-// DFU HeadBobber rotates MainCamera while walking; with mouselook disabled that
-// rotation can accumulate frame after frame and make the view sink toward floor.
+// RICOS: HeadBobber disabled while Decorator owns camera to prevent view drift.    
 decoratorHeadBobber = GameManager.Instance.PlayerObject.GetComponent<HeadBobber>();
 if (decoratorHeadBobber != null)
 {
@@ -1045,6 +1043,7 @@ previewGo = placedObject.gameObject;
 previewCollider = placedObject.GetComponent<BoxCollider>();
 previewLight = placedObject.transform.GetComponentInChildren<Light>();
 IgnoreRaycasts(previewGo);
+snapCheckbox.IsChecked=false;
 ApplyEditHighlight(previewGo);
 }
 }
