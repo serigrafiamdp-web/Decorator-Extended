@@ -81,7 +81,7 @@ private HorizontalSlider lightHorizontalRotationSlider;
 private HorizontalSlider lightVerticalRotationSlider;
 private Button colorPicker;
 private Rect scalePanelRect = new Rect(230.0f, 54.0f, 90.0f, 40.0f);
-// RICOS UI TEST 09: Light submenu positioned below the Scale 
+// RICOS UI TEST 09: Light submenu positioned below the Scale                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 private Rect scaleResetButtonRect = new Rect(0.0f, 0.0f, 25.0f, 10.0f);
 private Panel scalePanel;
 private Button scaleResetButton;
@@ -1502,89 +1502,38 @@ DecoratorHelper.SetPlacedObject(data, previewGo);
 ResetPreview();
 }
 }
+private Vector3 CamMove(bool right){Vector3 v=GameManager.Instance.MainCamera.transform.forward;v.y=0;v.Normalize();return right?Vector3.Cross(Vector3.up,v):v;}
 private void UpButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
 {
-if (previewGo == null)
-return;
-if (!editMode)
+if(previewGo==null)return;
+if(Input.GetKey(KeyCode.LeftShift)||Input.GetKeyDown(KeyCode.RightShift))
 {
-Vector3 goPosition = previewGo.transform.localPosition;
-if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
-{
-goPosition.y += .02f;
+if(!editMode){Vector3 p=previewGo.transform.localPosition;p.y+=.02f;previewGo.transform.localPosition=lastPosition=p;}
+else{Vector3 p=previewGo.transform.InverseTransformPoint(previewGo.transform.position);p.y+=.02f;previewGo.transform.position=previewGo.transform.TransformPoint(p);}
 }
-else
-goPosition.z += .02f;
-previewGo.transform.localPosition = lastPosition = goPosition;
-}
-else
-{
-Vector3 goPosition = previewGo.transform.InverseTransformPoint(previewGo.transform.position);
-if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
-{
-goPosition.y += .02f;
-}
-else
-goPosition.z += .02f;
-previewGo.transform.position = previewGo.transform.TransformPoint(goPosition);
-}
+else{previewGo.transform.position+=CamMove(false)*.02f;if(!editMode)lastPosition=previewGo.transform.localPosition;}
 }
 private void DownButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
 {
-if (previewGo == null)
-return;
-if (!editMode)
+if(previewGo==null)return;
+if(Input.GetKey(KeyCode.LeftShift)||Input.GetKeyDown(KeyCode.RightShift))
 {
-Vector3 goPosition = previewGo.transform.localPosition;
-if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
-goPosition.y -= .02f;
-else
-goPosition.z -= .02f;
-previewGo.transform.localPosition = lastPosition = goPosition;
+if(!editMode){Vector3 p=previewGo.transform.localPosition;p.y-=.02f;previewGo.transform.localPosition=lastPosition=p;}
+else{Vector3 p=previewGo.transform.InverseTransformPoint(previewGo.transform.position);p.y-=.02f;previewGo.transform.position=previewGo.transform.TransformPoint(p);}
 }
-else
-{
-Vector3 goPosition = previewGo.transform.InverseTransformPoint(previewGo.transform.position);
-if (Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
-goPosition.y -= .02f;
-else
-goPosition.z -= .02f;
-previewGo.transform.position = previewGo.transform.TransformPoint(goPosition);
-}
+else{previewGo.transform.position-=CamMove(false)*.02f;if(!editMode)lastPosition=previewGo.transform.localPosition;}
 }
 private void LeftButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
 {
-if (previewGo == null)
-return;
-if (!editMode)
-{
-Vector3 goPosition = previewGo.transform.localPosition;
-goPosition.x -= .02f;
-previewGo.transform.localPosition = lastPosition = goPosition;
-}
-else
-{
-Vector3 goPosition = previewGo.transform.InverseTransformPoint(previewGo.transform.position);
-goPosition.x += .02f;
-previewGo.transform.position = previewGo.transform.TransformPoint(goPosition);
-}
+if(previewGo==null)return;
+previewGo.transform.position-=CamMove(true)*.02f;
+if(!editMode)lastPosition=previewGo.transform.localPosition;
 }
 private void RightButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
 {
-if (previewGo == null)
-return;
-if (!editMode)
-{
-Vector3 goPosition = previewGo.transform.localPosition;
-goPosition.x += .02f;
-previewGo.transform.localPosition = lastPosition = goPosition;
-}
-else
-{
-Vector3 goPosition = previewGo.transform.InverseTransformPoint(previewGo.transform.position);
-goPosition.x -= .02f;
-previewGo.transform.position = previewGo.transform.TransformPoint(goPosition);
-}
+if(previewGo==null)return;
+previewGo.transform.position+=CamMove(true)*.02f;
+if(!editMode)lastPosition=previewGo.transform.localPosition;
 }
 private void RotateXZLeftButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
 {
