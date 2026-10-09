@@ -81,7 +81,7 @@ private HorizontalSlider lightHorizontalRotationSlider;
 private HorizontalSlider lightVerticalRotationSlider;
 private Button colorPicker;
 private Rect scalePanelRect = new Rect(230.0f, 54.0f, 90.0f, 40.0f);
-// RICOS UI TEST 09: Light submenu positioned below the Scale submenu footprint.
+// RICOS UI TEST 09: Light submenu positioned below the Scale 
 private Rect scaleResetButtonRect = new Rect(0.0f, 0.0f, 25.0f, 10.0f);
 private Panel scalePanel;
 private Button scaleResetButton;
@@ -895,11 +895,7 @@ else
 scalePanel.Enabled = false;
 previewGo.transform.localScale = Vector3.one;
 }
-if (snapCheckbox.IsChecked)
-{
-if(editMode)previewGo.transform.localEulerAngles=Vector3.up*Mathf.Round(previewGo.transform.localEulerAngles.y/90)*90;
-else{SetObjectHeight(goHeight);SetObjectPosition();}
-}
+if(snapCheckbox.IsChecked)previewGo.transform.localEulerAngles=Vector3.up*Mathf.Round(previewGo.transform.localEulerAngles.y/90)*90;
 }
 }
 public override void OnPush()
@@ -1615,13 +1611,7 @@ private void RotateLeftButton_OnMouseClick(BaseScreenComponent sender, Vector2 p
 {
 if (previewGo == null)
 return;
-if (snapCheckbox.IsChecked)
-{
-if (goRotation - 1 == -1)
-goRotation = 3;
-else
-goRotation = Mathf.Max(0, goRotation - 1);
-}
+if(snapCheckbox.IsChecked){float y=Mathf.Round(previewGo.transform.localEulerAngles.y/90)*90-90;previewGo.transform.localEulerAngles=Vector3.up*Mathf.Repeat(y,360);}
 else
 {
 Quaternion rotation = previewGo.transform.rotation;
@@ -1636,13 +1626,7 @@ private void RotateRightButton_OnMouseClick(BaseScreenComponent sender, Vector2 
 {
 if (previewGo == null)
 return;
-if (snapCheckbox.IsChecked)
-{
-if (goRotation + 1 == 4)
-goRotation = 0;
-else
-goRotation = Mathf.Min(3, goRotation + 1);
-}
+if(snapCheckbox.IsChecked){float y=Mathf.Round(previewGo.transform.localEulerAngles.y/90)*90+90;previewGo.transform.localEulerAngles=Vector3.up*Mathf.Repeat(y,360);}
 else
 {
 Quaternion rotation = previewGo.transform.rotation;
