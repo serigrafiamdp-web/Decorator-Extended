@@ -13,7 +13,7 @@ Primary editable files:
 - `decorator.dfmod.json`
 - `modsettings.json`
 
-The immutable current PASS binary is documented in `docs/MASTER_PASS_BINARY.md` and archived under `tools/MASTER_PASS/`.
+The current PASS binary identity is documented in `docs/MASTER_PASS_BINARY.md`. The Base64 artifact under `tools/MASTER_PASS/` is the historical V2 rollback binary, not the current 10G runtime.
 
 ## Build environment
 
@@ -43,7 +43,7 @@ The normal chain is now:
 
 `GitHub source -> DFU/Unity build -> decorator.dfmod TEST -> PASS/FAIL -> promote PASS source + binary identity`
 
-The archived current PASS can always be reconstructed with:
+The historical V2 rollback binary can be reconstructed with:
 
 ```bash
 python tools/MASTER_PASS/rebuild_master_pass.py
