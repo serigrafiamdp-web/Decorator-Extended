@@ -1,6 +1,6 @@
 # DECORATOR TEST 10A — FINE DIAGONAL ROTATION
 
-Status: **PENDING PASS/FAIL**
+Status: **PASS**
 
 Base:
 - `RICOS_DECORATOR_V2_MASTER_08_OCT_2026`
@@ -51,3 +51,6 @@ PASS only if:
 4. Straight arrows still move 0.02 units per click.
 5. Snap behavior is unchanged.
 6. VICE bezel MIN remains functional.
+
+
+Promoted to MASTER on 2026-10-09.
