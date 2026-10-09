@@ -35,3 +35,6 @@ Test ZIP:
 ## User validation
 
 PASS confirmed in runtime. Existing placed decorations load normally. Left/Right fast movement works at 0.10, and Shift + Left/Right provides fine 0.02 movement.
+
+
+Promoted to MASTER on 2026-10-09.
