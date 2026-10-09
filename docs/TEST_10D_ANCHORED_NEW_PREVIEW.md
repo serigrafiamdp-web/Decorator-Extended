@@ -1,6 +1,6 @@
 # DECORATOR TEST 10D — ANCHORED NEW PREVIEW
 
-Status: **PENDING PASS/FAIL**
+Status: **PASS**
 
 Base:
 - TEST 10A fine diagonal rotation = PASS
@@ -63,3 +63,6 @@ The file remains exactly **63,571 bytes** for byte-stable UnityFS patching.
 6. Fine translation and diagonal rotation continue to work.
 7. Accept saves the final location.
 8. Existing Edit behavior is unchanged.
+
+
+Promoted to MASTER on 2026-10-09.
