@@ -1,6 +1,6 @@
 # DECORATOR TEST 10E — CAMERA-RELATIVE TRANSLATION
 
-Status: **PENDING PASS/FAIL**
+Status: **PASS**
 
 Base: **TEST 10D anchored new preview**.
 
