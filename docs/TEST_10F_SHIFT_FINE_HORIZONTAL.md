@@ -1,6 +1,6 @@
 # DECORATOR TEST 10F — SHIFT FINE HORIZONTAL
 
-Status: **PENDING PASS/FAIL**
+Status: **FAIL CRITICAL**
 
 Base: **TEST 10E CAMERA-RELATIVE TRANSLATION = PASS**
 
@@ -51,3 +51,8 @@ Functional commit: `406d4a4d2689e0b007c558cdbba3f6c36847ef70`
 3. Holding Shift returns to the fine 0.02 step.
 4. Behavior is identical for new anchored previews and Edit-selected objects.
 5. Up/Down, vertical Shift movement, rotations, Snap and Accept remain unchanged.
+
+
+## Failure
+
+Runtime: existing placed decorations did not appear. Root cause: the compact ternary token `?.02f` can be parsed as the null-conditional operator `?.`, preventing the mod source from compiling/loading correctly. User did not save the affected game state.
