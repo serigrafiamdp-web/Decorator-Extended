@@ -638,8 +638,8 @@ debugButton.OnMouseClick += DebugButton_OnMouseClick;
 debugButton.Label.Text = "DBG";
 debugButton.Label.TextScale = 0.75f;
 debugButton.Enabled = DecoratorManager.Instance.DecoratorDebug;
-// RICOS UI V2: transparent top-right layout; LOW / MED / HIGH remain removed.
-// RICOS UI TEST 08: font scale normalized to 0.75; main checkbox rows remain y=2/10/18/26.
+//
+//
 rotateLeftButton = DaggerfallUI.AddButton(rotateLeftButtonRect, transformSubPanel1);
 rotateLeftButton.ClickSound = ClickSound;
 rotateLeftButton.OnMouseClick += RotateLeftButton_OnMouseClick;
@@ -922,7 +922,7 @@ itemRank = true;
 }
 playerActivate = GameManager.Instance.PlayerActivate;
 playerMouseLook = GameManager.Instance.PlayerMouseLook;
-// RICOS: HeadBobber disabled while Decorator owns camera to prevent view drift.    
+//
 decoratorHeadBobber = GameManager.Instance.PlayerObject.GetComponent<HeadBobber>();
 if (decoratorHeadBobber != null)
 {
@@ -1067,14 +1067,14 @@ previewGo = DecoratorHelper.CreatePlacedObject(data, parent, true);
 previewCollider = previewGo.GetComponent<BoxCollider>();
 previewLight = previewGo.transform.GetComponentInChildren<Light>();
 IgnoreRaycasts(previewGo);
-ResetTransform();
+ResetTransform();SetObjectHeight(goHeight);SetObjectPosition();previewGo.transform.SetParent(Parent,true);previewGo.transform.localEulerAngles=Vector3.up*Mathf.Round(previewGo.transform.localEulerAngles.y/90)*90;lastPosition=previewGo.transform.localPosition;
 lastPlacedObjectData = data;
 }
 private void GenerateButtons(List<Dictionary<string, string>> dictionaryList)
 {
 float xPosition = 0f;
 float yPosition = 0f;
-float scale = 0.75f; // RICOS UI TEST 08: normalized primary menu font scale
+float scale = 0.75f; // RICOS UI TEST 08
 foreach (Dictionary<string, string> dictionary in dictionaryList)
 {
 string name = DecoratorHelper.Parse("-1", dictionary).name;
@@ -1211,8 +1211,9 @@ items++;
 }
 private void SetObjectPosition()
 {
-snapRay.origin = Player.position;
-snapRay.direction = Player.forward;
+Transform c=GameManager.Instance.MainCamera.transform;
+snapRay.origin=c.position;
+snapRay.direction=c.forward;
 if (Physics.Raycast(snapRay, out snapRayHit, 5.0f))
 {
 if (previewCollider.size.z > 0)
