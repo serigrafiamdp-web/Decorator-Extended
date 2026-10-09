@@ -1,6 +1,6 @@
 # DECORATOR TEST 10B — EDIT SNAP NEAREST AXIS
 
-Status: **PENDING PASS/FAIL**
+Status: **PASS**
 
 Base:
 - **TEST 10A FINE DIAGONAL ROTATION = PASS**
@@ -61,3 +61,6 @@ The `DecoratorWindow.cs` byte length remains **63,571 bytes**, matching TEST 10A
 7. Accept saves that adjusted transform.
 8. Selecting another object starts with Snap unchecked.
 9. Snap for new object placement remains unchanged.
+
+
+Promoted to MASTER on 2026-10-09.
