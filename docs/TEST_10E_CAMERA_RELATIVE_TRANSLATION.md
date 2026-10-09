@@ -1,6 +1,6 @@
 # DECORATOR TEST 10E — CAMERA-RELATIVE TRANSLATION
 
-Status: **PENDING PASS/FAIL**
+Status: **PASS**
 
 Base: **TEST 10D anchored new preview**.
 
@@ -67,3 +67,6 @@ The source remains exactly **63,571 bytes**.
 6. Same behavior in Edit mode.
 7. SHIFT Up/Down remains unchanged.
 8. Rotations, Snap, Accept, and VICE MIN remain unchanged.
+
+
+Promoted to MASTER on 2026-10-09.
