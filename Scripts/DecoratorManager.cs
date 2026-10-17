@@ -475,6 +475,7 @@ private bool isSpellMaker;
 private bool isItemMaker;
 private bool isEmulator;
 private bool isEmulator2;
+private bool isWeb;
 private Color lightColor;
 private float lightIntensity;
 private float lightSpotAngle;
@@ -498,6 +499,7 @@ isSpellMaker = data.isSpellMaker;
 isItemMaker = data.isItemMaker;
 isEmulator = data.isEmulator;
 isEmulator2 = data.isEmulator2;
+isWeb = data.isWeb;
 lightColor = data.lightColor;
 lightIntensity = data.lightIntensity;
 lightSpotAngle = data.lightSpotAngle;
@@ -523,6 +525,7 @@ data.isSpellMaker = isSpellMaker;
 data.isItemMaker = isItemMaker;
 data.isEmulator = isEmulator;
 data.isEmulator2 = isEmulator2;
+data.isWeb = isWeb;
 data.lightColor = lightColor;
 data.lightIntensity = lightIntensity;
 data.lightType = lightType;
@@ -576,10 +579,30 @@ if(!System.IO.File.Exists(bat)){Debug.LogError("Decorator Emulator 2: BAT not fo
 try{System.Diagnostics.ProcessStartInfo psi=new System.Diagnostics.ProcessStartInfo();psi.FileName="cmd.exe";psi.Arguments="/c \""+bat+"\"";psi.WorkingDirectory=System.IO.Path.GetDirectoryName(bat);psi.UseShellExecute=false;psi.CreateNoWindow=true;psi.WindowStyle=System.Diagnostics.ProcessWindowStyle.Hidden;System.Diagnostics.Process.Start(psi);}
 catch(Exception ex){Debug.LogError("Decorator Emulator 2 launch failed: "+ex.Message);}
 }
+private void LaunchWeb()
+{
+try
+{
+System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo();
+psi.FileName = "https://serigrafiamdp-web.github.io/RICOS-C64-MOD-JAMES-C64-WEB-EMULATOR-/c64/";
+psi.UseShellExecute = true;
+System.Diagnostics.Process.Start(psi);
+}
+catch (Exception ex)
+{
+Debug.LogError("Decorator WEB launch failed: " + ex.Message);
+}
+}
 public void Activate(RaycastHit hit)
 {
 if (!GameManager.Instance.IsPlayerOnHUD)
 return;
+if (isWeb)
+{
+if (GameManager.Instance.PlayerMouseLook.cursorActive)
+LaunchWeb();
+return;
+}
 if (isEmulator2)
 {
 if (GameManager.Instance.PlayerMouseLook.cursorActive)
