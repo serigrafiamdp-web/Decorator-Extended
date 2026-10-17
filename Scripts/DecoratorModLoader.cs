@@ -124,7 +124,7 @@ public bool isContainer;
 public bool isLight;
 public bool isPotionMaker;
 public bool isSpellMaker;
-public bool isItemMaker, isEmulator, isEmulator2;
+public bool isItemMaker, isEmulator, isEmulator2, isWeb;
 public LightType lightType;
 public Color lightColor;
 public float lightIntensity;
