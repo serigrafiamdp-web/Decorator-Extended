@@ -72,6 +72,7 @@ private Checkbox spellMakerCheckbox;
 private Checkbox itemMakerCheckbox;
 private Checkbox emulatorCheckbox;
 private Checkbox emulator2Checkbox;
+private Checkbox webCheckbox;
 private Rect lightPanelRect = new Rect(230.0f, 95.0f, 90.0f, 53.0f);
 private Panel lightPanel;
 private Checkbox lightSpotCheckbox;
@@ -722,6 +723,10 @@ emulator2Checkbox = DaggerfallUI.AddCheckbox(new Vector2(111.0f, 10.0f), false, 
 emulator2Checkbox.Label.Text = "Emulator 2";
 emulator2Checkbox.Label.TextScale = 0.75f;
         emulator2Checkbox.OnMouseClick += OnCheckboxClicked;
+webCheckbox = DaggerfallUI.AddCheckbox(new Vector2(111.0f, 18.0f), false, transformPanel);
+webCheckbox.Label.Text = "WEB";
+webCheckbox.Label.TextScale = 0.75f;
+webCheckbox.OnMouseClick += OnCheckboxClicked;
 lightPanel = DaggerfallUI.AddPanel(lightPanelRect);
 lightPanel.BackgroundColor = Color.clear;
 lightPanel.Outline.Enabled =false;
@@ -1034,6 +1039,7 @@ spellMakerCheckbox.IsChecked = placedObjectData.isSpellMaker;
 itemMakerCheckbox.IsChecked = placedObjectData.isItemMaker;
 emulatorCheckbox.IsChecked = placedObjectData.isEmulator;
 emulator2Checkbox.IsChecked = placedObjectData.isEmulator2;
+webCheckbox.IsChecked = placedObjectData.isWeb;
 DecoratorHelper.SetPlacedObject(placedObjectData, placedObject.gameObject);
 previewGo = placedObject.gameObject;
 previewCollider = placedObject.GetComponent<BoxCollider>();
@@ -1468,12 +1474,14 @@ spellMakerCheckbox.IsChecked = false;
 itemMakerCheckbox.IsChecked = false;
 emulatorCheckbox.IsChecked = false;
 emulator2Checkbox.IsChecked = false;
+webCheckbox.IsChecked = false;
 }
 data.isPotionMaker = potionMakerCheckbox.IsChecked;
 data.isSpellMaker = spellMakerCheckbox.IsChecked;
 data.isItemMaker = itemMakerCheckbox.IsChecked;
 data.isEmulator = emulatorCheckbox.IsChecked;
 data.isEmulator2 = emulator2Checkbox.IsChecked;
+data.isWeb = webCheckbox.IsChecked;
 if (scaleCheckBox.IsChecked)
 data.localScale = new Vector3(scaleXSlider.GetValue(), scaleYSlider.GetValue(), scaleZSlider.GetValue());
 else
@@ -1625,6 +1633,7 @@ spellMakerCheckbox.IsChecked = clickedCheckbox == spellMakerCheckbox;
 itemMakerCheckbox.IsChecked = clickedCheckbox == itemMakerCheckbox;
 emulatorCheckbox.IsChecked = clickedCheckbox == emulatorCheckbox;
 emulator2Checkbox.IsChecked = clickedCheckbox == emulator2Checkbox;
+webCheckbox.IsChecked = clickedCheckbox == webCheckbox;
 }
 private void DeleteButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
 {
